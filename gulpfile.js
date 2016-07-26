@@ -1,15 +1,20 @@
-var gulp 				 = require('gulp'),
-		sass 				 = require('gulp-sass'),
-		browserSync = require('browser-sync');
+var gulp 				= require('gulp'),
+		sass 				= require('gulp-sass'),
+		browserSync = require('browser-sync'),
+		useref      = require('gulp-useref'),
+		gulpif			= require('gulp-if'),
+		uglify      = require('gulp-uglify'),
+		minifyCss   = require('gulp-minify-css'),
+		rename      = require('gulp-rename');
 
 
 
 //====================================COMPILE_SASS_FILES
 gulp.task('sass', function(){
 	return gulp.src(['app/scss/modules/*.scss', 'app/scss/assets/_*.scss' ])
-				 .pipe(sass())
-				 .pipe(gulp.dest('app/css'))
-				 .pipe(browserSync.reload({stream:true}))
+		  	 .pipe(sass())
+		  	 .pipe(gulp.dest('app/css'))
+		  	 .pipe(browserSync.reload({stream:true}))
 });
 //====================================COMPILE_SASS_FILES_END
 
@@ -40,3 +45,25 @@ gulp.task('default', function() {
 				 .pipe(gulp.dest('Where we brought'))
 });
 //====================================DEFAULT_GULP_TASK_END
+
+//====================================BUILD_END
+gulp.task('userefConcat', function () {
+    return gulp.src('app/*.html')
+        .pipe(useref())
+        // .pipe(gulpif('*.js', uglify()))
+        // .pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulp.dest('dist'));
+});
+gulp.task('scripts', function () {
+    return gulp.src('dist/main.html')
+        .pipe(useref())
+        // .pipe(gulpif('*.js', uglify()))
+        // .pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulp.dest('dist'));
+    return gulp.src('dist/main.html')
+        .pipe(useref())
+        // .pipe(gulpif('*.js', uglify()))
+        // .pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulp.dest('dist'));
+});
+//====================================BUILD_END
