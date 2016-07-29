@@ -1,3 +1,8 @@
 /*==================================HEADER_STYLES========================================*/
 h1 {
-  color: red; }
+  color: violet;
+  -webkit-box-shadow: 0 0 0 0 #000;
+  -moz-box-shadow: 0 0 0 0 #000;
+  box-shadow: 0 0 0 0 #000; }
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImhlYWRlci5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsMkZBQTJGO0FBQzNGO0VBQ0UsY0FBYztFQUNkLGlDQUF5QjtFQUF6Qiw4QkFBeUI7RUFBekIseUJBQXlCLEVBQUUiLCJmaWxlIjoiaGVhZGVyLmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi8qPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PUhFQURFUl9TVFlMRVM9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ki9cbmgxIHtcbiAgY29sb3I6IHZpb2xldDtcbiAgYm94LXNoYWRvdzogMCAwIDAgMCAjMDAwOyB9XG4iXSwic291cmNlUm9vdCI6Ii9zb3VyY2UvIn0= */

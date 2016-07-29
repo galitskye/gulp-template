@@ -1,18 +1,27 @@
-var gulp 				= require('gulp'),
-		sass 				= require('gulp-sass'),
-		browserSync = require('browser-sync'),
-		reload      = browserSync.reload,
-		useref      = require('gulp-useref'),
-		gulpif			= require('gulp-if'),
-		uglify      = require('gulp-uglify'),
-		minifyCss   = require('gulp-minify-css'),
-		rename      = require('gulp-rename'),
-    rigger      = require('gulp-rigger');
+var gulp 				   = require('gulp'),
+		sass 				   = require('gulp-sass'),
+		browserSync    = require('browser-sync'),
+		reload         = browserSync.reload,
+		useref         = require('gulp-useref'),
+		gulpif			   = require('gulp-if'),
+		uglify         = require('gulp-uglify'),
+		minifyCss      = require('gulp-minify-css'),
+		rename         = require('gulp-rename'),
+    rigger         = require('gulp-rigger'),
+    prettify       = require('gulp-html-prettify'),
+    autoprefixer   = require('gulp-autoprefixer'),
+    sourcemaps     = require('gulp-sourcemaps');
 
 //====================================COMPILE_SASS_FILES
 gulp.task('sass', function(){
 	return gulp.src(['app/scss/modules/*.scss', 'app/scss/assets/_*.scss' ])
-		  	 .pipe(sass())
+		  	 .pipe(sass().on('error', sass.logError))
+         .pipe(sourcemaps.init())
+         .pipe(autoprefixer({
+            browsers: ['last 150 versions','ie 8'],
+            cascade: false
+          }))
+         .pipe(sourcemaps.write())
 		  	 .pipe(gulp.dest('app/css'))
 		  	 .pipe(reload({stream:true}))
 });
@@ -32,8 +41,9 @@ gulp.task('browser-sync', function(){
 
 //====================================HTML_TASK
   gulp.task('rigger', function () {
-      gulp.src('app/modules/*.html')
-          .pipe(rigger()) 
+      gulp.src('app/pages/*.html')
+          .pipe(rigger())
+          .pipe(prettify())
           .pipe(gulp.dest('app/'))
           .pipe(reload({stream: true})); 
   });
@@ -41,8 +51,8 @@ gulp.task('browser-sync', function(){
 
 //====================================WATCH
   gulp.task('watch', ['rigger','sass','browser-sync'], function(){
-  	gulp.watch(['app/scss/modules/*.scss', 'app/scss/assets/_*.scss' ],['sass', reload]);
-  	gulp.watch(['app/*.html','app/layouts/*.html'],['rigger', reload]);
+  	gulp.watch(['app/scss/modules/*.scss', 'app/scss/assets/_*.scss' ],['sass']);
+  	gulp.watch(['app/pages/*.html','app/modules/*.html'],['rigger']);
   	gulp.watch(['app/js/**/*.js'],[reload]);
   });
 //====================================WATCH_END
