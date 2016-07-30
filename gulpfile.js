@@ -26,11 +26,11 @@ var gulp 				   = require('gulp'),
           .pipe(reload({stream:true}));
   });
   gulp.task('bower', function () {
-    gulp.src(['app/modules/head-settings.html','app/modules/scripts-add.html'])
+    gulp.src('app/*.html')
         .pipe(wiredep({
           directory : "app/libs"
         }))
-        .pipe(gulp.dest('app/modules'));
+        .pipe(gulp.dest('app/'));
   });
 //====================================HTML_TASK_END
 
@@ -74,11 +74,12 @@ gulp.task('sass', function(){
 //====================================COMPILE_JAVASCRIPT_FILES_END
 
 //====================================BROWSER_SYNC
-gulp.task('browser-sync', function(){
+gulp.task('browser-sync', function(dir){
   browserSync({
     port: 9990,
     server: {
-      baseDir: 'app'
+      baseDir: './app',
+      startPath: '/'
     },
     notify: false
   });
@@ -86,13 +87,13 @@ gulp.task('browser-sync', function(){
 //====================================BROWSER_SYNC_END
 
 //====================================WATCH
-  gulp.task('default', ['bower','sass'], function(){
-  	gulp.watch(['app/scss/modules/*.scss', 'app/scss/assets/_*.scss' ],['sass']);
-  	gulp.watch(['app/pages/*.html','app/modules/*.html'],['rigger']);
-    gulp.watch(['app/js/**/*.js'],['scripts']);
-  	gulp.watch(['bower.json'],['bower']);
+  gulp.task('default', ['rigger','sass'], function(){
+    gulp.start('bower');
     gulp.start('browser-sync');
-    gulp.start('rigger');
+    gulp.watch(['app/scss/modules/*.scss', 'app/scss/assets/_*.scss' ],['sass']);
+    gulp.watch(['app/pages/*.html','app/modules/*.html'],['bower']);
+    gulp.watch(['app/js/**/*.js'],['scripts']);
+    gulp.watch(['bower.json'],['bower']);
   });
 //====================================WATCH_END
 
@@ -130,7 +131,12 @@ gulp.task('browser-sync', function(){
         .pipe(imageMin())
         .pipe(gulp.dest('dist/images'))
   });
+  gulp.task('fonts:build', function(){
+    gulp.src('app/fonts/**/*')
+        .pipe(gulp.dest('dist/fonts/'))
+  });
   gulp.task('build',['html:build'], function(){ //==============BILD_ALL_PROJECT
+    gulp.start('fonts:build');
     gulp.start('scripts:build');
     gulp.start('styles:build');
     gulp.start('imageMin:build');
