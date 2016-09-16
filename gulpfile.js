@@ -139,10 +139,11 @@ gulp.task('browser-sync', function(dir){
         .pipe(gulp.dest('dist/images'))
   });
   gulp.task('fonts:build', function(){
-    gulp.src('app/fonts/**/*')
+    gulp.src(['app/fonts/**/*','app/libs/*/fonts/*.*'])
         .pipe(gulp.dest('dist/fonts/'))
   });
-  gulp.task('build',['html:build'], function(){ //==============BILD_ALL_PROJECT
+  gulp.task('build',['sass','rigger'], function(){ //==============BILD_ALL_PROJECT
+    gulp.start('html:build');
     gulp.start('fonts:build');
     gulp.start('scripts:build');
     gulp.start('styles:build');
