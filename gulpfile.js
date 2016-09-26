@@ -1,13 +1,13 @@
-var gulp           = require('gulp'),
-    sass           = require('gulp-sass'),
+var gulp 				   = require('gulp'),
+		sass 				   = require('gulp-sass'),
     cssComb        = require('gulp-csscomb'),
-    browserSync    = require('browser-sync'),
-    reload         = browserSync.reload,
+		browserSync    = require('browser-sync'),
+		reload         = browserSync.reload,
     useref         = require('gulp-useref'),
-    gulpif         = require('gulp-if'),
-    uglify         = require('gulp-uglify'),
-    minifyCss      = require('gulp-minify-css'),
-    rename         = require('gulp-rename'),
+		gulpif         = require('gulp-if'),
+		uglify         = require('gulp-uglify'),
+		minifyCss      = require('gulp-minify-css'),
+		rename         = require('gulp-rename'),
     rigger         = require('gulp-rigger'),
     prettify       = require('gulp-html-prettify'),
     autoprefixer   = require('gulp-autoprefixer'),
@@ -16,7 +16,8 @@ var gulp           = require('gulp'),
     wiredep        = require('wiredep').stream,
     jsValidate     = require('gulp-jsvalidate'),
     notify         = require('gulp-notify'),
-    plumber        = require('gulp-plumber');
+    plumber        = require('gulp-plumber'),
+    spritesmith    = require('gulp.spritesmith');
 
 //====================================HTML_TASK
   gulp.task('rigger', function () {
@@ -43,7 +44,11 @@ var gulp           = require('gulp'),
 
 //====================================COMPILE_SASS_FILES
 gulp.task('sass', function(){
-  return gulp.src(['app/scss/modules/*.scss', 'app/scss/assets/_*.scss' ])
+  return gulp.src([
+                    'app/scss/pages/*.scss',
+                    'app/scss/assets/*.scss',
+                    'app/scss/modules/*.scss'
+                  ])
      .pipe(sourcemaps.init())
      .pipe(sass())
      .on('error', notify.onError(function(err){
@@ -95,7 +100,8 @@ gulp.task('browser-sync', function(dir){
 
 //====================================WATCH
   gulp.task('default', ['rigger','sass'], function(){
-    gulp.watch(['app/scss/modules/*.scss', 'app/scss/assets/_*.scss' ],['sass']);
+    gulp.start('bower');
+    gulp.watch(['app/scss/*/*.scss' ],['sass']);
     gulp.watch(['app/pages/*.html','app/modules/*.html'],['rigger']);
     gulp.watch("app/*.html").on('change', browserSync.reload);
     gulp.watch(['app/js/**/*.js'],['scripts']);
@@ -103,6 +109,20 @@ gulp.task('browser-sync', function(dir){
     gulp.start('browser-sync');
   });
 //====================================WATCH_END
+
+//=============CREATE_SPRITE
+gulp.task('sprite', function() {
+  var spriteData = 
+    gulp.src('./app/images/sprite/*.*') // путь, откуда берем картинки для спрайта
+      .pipe(spritesmith({
+        imgName: 'sprite.png',
+        cssName: 'sprite.css',
+        imgPath: '../images/sprite.png'
+      }));
+  spriteData.img.pipe(gulp.dest('./app/images/')); // путь, куда сохраняем картинку
+  spriteData.css.pipe(gulp.dest('./app/css/')); // путь, куда сохраняем стили
+});
+//=============END:CREATE_SPRITE
 
 //====================================BUILD_END
   gulp.task('html:build',['useref'], function () {
@@ -117,10 +137,10 @@ gulp.task('browser-sync', function(dir){
   });
   gulp.task('scripts:build', function () {
       return gulp.src(['dist/js/*.js','!dist/js/*.min.js'])
-          .pipe(uglify())
-          .pipe(rename(function(path){
-            path.dirname += "/js";
-            path.extname = ".min.js"
+      		.pipe(uglify())
+      		.pipe(rename(function(path){
+          	path.dirname += "/js";
+  			    path.extname = ".min.js"
           }))
           .pipe(gulp.dest('dist'));
   });
@@ -128,8 +148,8 @@ gulp.task('browser-sync', function(dir){
       return gulp.src(['dist/css/*.css','!dist/css/*.min.css'])
           .pipe(minifyCss())
           .pipe(rename(function(path){
-            path.dirname += "/css";
-            path.extname = ".min.css"
+          	path.dirname += "/css";
+  			    path.extname = ".min.css"
           }))
           .pipe(gulp.dest('dist'));
   });
@@ -139,8 +159,12 @@ gulp.task('browser-sync', function(dir){
         .pipe(gulp.dest('dist/images'))
   });
   gulp.task('fonts:build', function(){
-    gulp.src(['app/fonts/**/*','app/libs/*/fonts/*.*'])
+    gulp.src('app/fonts/**/*')
         .pipe(gulp.dest('dist/fonts/'))
+    gulp.src('app/libs/font-awesome/fonts/*.+(eot|woff|woff2|ttf|otf|svg)')
+        .pipe(gulp.dest('dist/fonts'))
+    gulp.src('app/*.+(png|ico|jpg)')
+        .pipe(gulp.dest('dist/'))
   });
   gulp.task('build',['sass','rigger'], function(){ //==============BILD_ALL_PROJECT
     gulp.start('html:build');
